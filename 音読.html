@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>歌詞クリックで再生・停止</title>
+<style>
+  html, body {
+    height: 100%;
+    margin: 0;
+  }
+  #container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* 縦方向中央 */
+    align-items: center;     /* 横方向中央 */
+    height: 100vh;
+    width: 80%;
+    margin: 0 auto;
+    text-align: center;
+    font-size: 36px; /* 基本サイズを18pxの2倍に */
+    line-height: 1.6;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-y: auto; /* 高さ超過時にスクロール */
+  }
+  #lyrics span {
+    display: block;
+    cursor: pointer;
+    margin: 10px 0;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  /* ハイライトのスタイル（フォントサイズは変えない） */
+  #lyrics span.active {
+    background-color: #ffe6e6; /* 薄い赤ピンク */
+    color: #d33;               /* 濃赤 */
+  }
+  .button {
+    padding: 10px 20px;
+    font-size: 36px; /* ボタンのフォントサイズも2倍 */
+    margin: 10px;
+    cursor: pointer;
+    white-space: nowrap; /* テキスト途中で折り返さない */
+  }
+</style>
+</head>
+<body>
+<div id="container">
+  <br><br><br><br><br><br><br><br><br><br><br><br><br>
+  <button id="playButton" class="button">▶️ 再生</button>
+  <button id="pauseButton" class="button">⏸ 停止</button>
+
+  <audio id="audio" src="61.MOV" preload="auto"></audio>
+<br><br><br><br>
+  <div id="lyrics">
+    <span data-start="0.2" data-end="4.68" onclick="playFrom(this)">The Internet is very much like television in that</span>
+    <span data-start="4.68" data-end="11.08" onclick="playFrom(this)">it takes time away from other pursuits, provides entertainment and information,</span>
+    <span data-start="11.08" data-end="13.4" onclick="playFrom(this)">but in no way can compare</span>
+    <span data-start="13.4" data-end="19" onclick="playFrom(this)">with the warm, personal experience of reading a good book.</span>
+    <span data-start="19" data-end="25" onclick="playFrom(this)">This is not the only reason why the Internet will never replace books,</span>
+    <span data-start="25" data-end="29.1" onclick="playFrom(this)">for books provide the sufficient knowledge of a subject</span>
+    <span data-start="29.1" data-end="34.2" onclick="playFrom(this)">That sitting in front of a computer monitor cannot provide.</span>
+    <span data-start="34.2" data-end="38.04" onclick="playFrom(this)">We can transfer text from an Internet source,</span>
+    <span data-start="38.04" data-end="42.4" onclick="playFrom(this)">But the artistic quality of sheets of transferred text</span>
+    <span data-start="42.4" data-end="45.1" onclick="playFrom(this)">leaves much to be desired</span>
+    <span data-start="45.1" data-end="51" onclick="playFrom(this)">A well-designed book makes the reading experience important.</span>
+    <span data-start="51" data-end="55.2" onclick="playFrom(this)">The book is still the most compact and economical means</span>
+    <span data-start="55.2" data-end="60.1" onclick="playFrom(this)">of conveying a lot of knowledge in a convenient package,</span>
+    <span data-start="60.1" data-end="63" onclick="playFrom(this)">and this is what makes it popular.</span>
+    <span data-start="63" data-end="66.8" onclick="playFrom(this)">The idea that one can carry in one’s pocket</span>
+    <span data-start="66.8" data-end="72.2" onclick="playFrom(this)">a play by Shakespeare, a novel by Charles Dickens or the Bible</span>
+    <span data-start="72.2" data-end="77.1" onclick="playFrom(this)">in a small book with stiff, paper cover is incredible.</span>
+    <span data-start="77.1" data-end="80.5" onclick="playFrom(this)">We take such uncommon convenience for granted,</span>
+    <span data-start="80.7" data-end="86.8" onclick="playFrom(this)">not realizing that the book itself has undergone quite an evolution</span>
+    <span data-start="86.4" data-end="91.2" onclick="playFrom(this)">since the production of the Gutenberg Bible in 1455</span>
+    <span data-start="91.2" data-end="1000" onclick="playFrom(this)">and Shakespeare’s book of plays in 1623,</span>
+  </div>
+</div>
+
+<script>
+  const audio = document.getElementById("audio");
+  const lyricsSpans = document.querySelectorAll("#lyrics span");
+
+  document.getElementById("playButton").addEventListener("click", () => {
+    audio.play();
+  });
+
+  document.getElementById("pauseButton").addEventListener("click", () => {
+    audio.pause();
+  });
+
+  function playFrom(elem) {
+    const startTime = parseFloat(elem.getAttribute("data-start"));
+    audio.currentTime = startTime;
+    audio.play();
+  }
+
+  // timeupdateイベントで再生中の歌詞にハイライトを付与（フォントサイズは変えない）
+  audio.addEventListener("timeupdate", () => {
+    const currentTime = audio.currentTime;
+    lyricsSpans.forEach(span => {
+      const start = parseFloat(span.getAttribute("data-start"));
+      const end = parseFloat(span.getAttribute("data-end")) || start + 5; // endが無ければ開始から5秒後まで
+      if (currentTime >= start && currentTime < end) {
+        span.classList.add("active");
+      } else {
+        span.classList.remove("active");
+      }
+    });
+  });
+
+  // スペースキー押下で再生／停止切り替え
+  document.addEventListener("keydown", (event) => {
+    if (event.code === "Space" && event.target === document.body) {
+      event.preventDefault(); // ページスクロール防止
+      if (audio.paused) {
+        audio.play();
+      } else {
+        audio.pause();
+      }
+    }
+  });
+</script>
+</body>
+</html>
